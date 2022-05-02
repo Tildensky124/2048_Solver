@@ -192,7 +192,7 @@ def playGame(runs, screen):
 	moveList = mainGame.moveList
 	isDynamic = False
 
-	if runs == 'Dynamic':
+	if runs == 'Smart':
 		isDynamic = True
 
 	while True:
