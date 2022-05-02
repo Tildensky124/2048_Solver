@@ -1,4 +1,27 @@
-from solver import *
+from Brains import *
+
+def giveOutcome(game, screen):
+	screen.clear()
+	createBoard(game.board, screen)
+	screen.addstr(19, 45, "Score: " + str(game.score))
+	screen.addstr(20, 45, "Moves: " + str(game.numMoves))
+	screen.addstr(21, 45, "GAME OVER")
+	screen.refresh()
+
+def chooseRuns():
+	curses.echo()
+	screen.clear()
+	screen.border(0)
+	screen.addstr(13, 14, "(reccomended: 100)")
+	screen.addstr(12, 14, "Enter the number of runs per move: ")
+	screen.refresh()
+	try:
+		runs = int(screen.getstr(12, 50, 4))
+	except ValueError:
+		runs = 0
+	screen.clear()
+	curses.noecho()
+	return runs
 
 x = 0
 runs = 100
@@ -61,31 +84,7 @@ curses.COLOR_WHITE)
 curses.init_pair(17, 
 curses.COLOR_BLACK, 
 curses.COLOR_WHITE)
-
-drawBoard(makeGame().board, screen)
-
-def N():
-	curses.echo()
-	screen.clear()
-	screen.border(0)
-	screen.addstr(13, 14, "(reccomended: 100)")
-	screen.addstr(12, 14, "Enter the number of runs per move: ")
-	screen.refresh()
-	try:
-		runs = int(screen.getstr(12, 50, 4))
-	except ValueError:
-		runs = 0
-	screen.clear()
-	curses.noecho()
-	return runs
-
-def O(game, screen):
-	screen.clear()
-	drawBoard(game.board, screen)
-	screen.addstr(15, 5, "Score: " + str(game.score),curses.color_pair(3))
-	screen.addstr(16, 5, "Moves: " + str(game.numMoves),curses.color_pair(3))
-	screen.addstr(18, 5, "GAME OVER",curses.color_pair(4))
-	screen.refresh()
+createBoard(startGame().board, screen)
 
 while True:
 	screen.border(0)
@@ -101,11 +100,11 @@ while True:
 
 	x = screen.getch()
 	if x == ord('1'):
-		runs = N()
+		runs = chooseRuns()
 	if x == ord('2'):
 		runs = 'Smart'		
 	if x == ord('3'):
-		O(solveGame(runs, screen), screen)
+		giveOutcome(playGame(runs, screen), screen)
 	if x == ord('4'):
 		break
 
