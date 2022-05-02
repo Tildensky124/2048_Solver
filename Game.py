@@ -1,51 +1,9 @@
 import random
 
 class Engine:
-
-    def A(self):
-        self.size = 4
-        self.board = [[0 for i in range(self.size)] for i in range(self.size)]
-        self.score = 0
-        self.numMoves = 0
-        self.moveList = ['d','l','u','r']
-        self.E()
-        self.E()
-
-    def B(self, val):
-        score = {
-            2: 4, 
-            4: 8, 
-            8: 16, 
-            16: 32, 
-            32: 64, 
-            64: 128, 
-            128: 256, 
-            256: 512, 
-            512: 1024, 
-            1024: 2048, 
-            2048: 4096, 
-            4096: 8192,
-            8192: 16384,
-            16384: 32768,
-            32768: 65536,
-            65536: 131072,
-        }
-        return score[val]
-
-    def C(self, board, count):
-        for c in range(count):
-            rotated = [[0 for i in range(self.size)] for i in range(self.size)]
-
-            for row in range(self.size):
-                for col in range(self.size):
-                    rotated[self.size - col - 1][row] = board[row][col]
-
-            board = rotated
-
-        return rotated
-
-    def D(self, moveDir):
-        if self.G(): 	
+    
+    def playMove(self, moveDir):
+        if self.stopGame(): 	
             pass
 
         board = self.board		
@@ -54,7 +12,7 @@ class Engine:
         moved = False
 
         if rotateCount:				
-            board = self.C(board, rotateCount)
+            board = self.turnBoard(board, rotateCount)
 
         merged = [[0 for i in range(self.size)] for i in range(self.size)] 
 
@@ -87,21 +45,22 @@ class Engine:
                     board[0][col] = 0
 
                     merged[row+1][col] = 1                      
-                    self.score += self.B(currentTile)  
+                    self.score += self.scoreCount(currentTile)  
                     moved = True
 
         if rotateCount:
-            board = self.C(board, 4 - rotateCount)
+            board = self.turnBoard(board, 4 - rotateCount)
 
         self.board = board
 
         if moved:
             self.numMoves += 1
-            self.E()
+            self.addNewBlock()
 
 
-    def E(self, val=None):
-        avail = self.F()
+
+    def addNewBlock(self, val=None):
+        avail = self.openSpots()
 
         if avail:
             (row, column) = avail[random.randint(0, len(avail) - 1)]
@@ -112,7 +71,22 @@ class Engine:
                 self.board[row][column] = 2
 
 
-    def F(self):
+
+    def turnBoard(self, board, count):
+        for c in range(count):
+            rotated = [[0 for i in range(self.size)] for i in range(self.size)]
+
+            for row in range(self.size):
+                for col in range(self.size):
+                    rotated[self.size - col - 1][row] = board[row][col]
+
+            board = rotated
+
+        return rotated
+
+
+
+    def openSpots(self):
         spots = []
         for row in enumerate(self.board):
             for col in enumerate(row[1]):
@@ -120,8 +94,44 @@ class Engine:
                     spots.append((row[0], col[0]))
         return spots
 
-    def G(self):
-        if self.F():
+
+
+    def scoreCount(self, val):
+        score = {
+            2: 4, 
+            4: 8, 
+            8: 16, 
+            16: 32, 
+            32: 64, 
+            64: 128, 
+            128: 256, 
+            256: 512, 
+            512: 1024, 
+            1024: 2048, 
+            2048: 4096, 
+            4096: 8192,
+            8192: 16384,
+            16384: 32768,
+            32768: 65536,
+            65536: 131072,
+        }
+        return score[val]
+
+
+
+    def __init__(self):
+        self.size = 4
+        self.board = [[0 for i in range(self.size)] for i in range(self.size)]
+        self.score = 0
+        self.numMoves = 0
+        self.moveList = ['d','l','u','r']
+        self.addNewBlock()
+        self.addNewBlock()
+
+
+
+    def stopGame(self):
+        if self.openSpots():
             return False
 
         board = self.board
